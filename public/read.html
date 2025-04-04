@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>こみかるスタンプ</title>
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="icon" href="favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Ropa+Sans" rel="stylesheet">
+
+    <style>    
+    
+        #loadingMessage {
+          text-align: center;
+          padding: 40px;
+          background-color: #eee;
+        }
+    
+        #canvas {
+          width: 100%;
+        }
+    
+        #output {
+          margin-top: 20px;
+          background: #eee;
+          padding: 10px;
+          padding-bottom: 0;
+        }
+    
+        #output div {
+          padding-bottom: 10px;
+          word-wrap: break-word;
+        }
+    
+    
+      </style>
+</head>
+<body class="dynamic-background">
+  <header>
+    <div id="header-title">  
+        <h1>こみかるスタンプ</h1>
+    </div>
+  </header>
+  <main>
+
+    <div id="mainLogo">
+        <img src="./img/logo.png">
+    </div>
+    <div id="loadingMessage">🎥 Unable to access video stream (please make sure you have a webcam enabled)</div>
+    <canvas id="canvas" hidden></canvas>
+    <div id="output" hidden>
+      <div id="outputMessage">検出中......</div>
+      <div hidden id="ok">読み取り成功</div>
+    </div>
+
+    <div id="return">
+      <button onclick="location.href='./index.html'">戻る</button>
+    </div>
+
+    <script>
+      const video = document.createElement("video");
+      const canvasElement = document.getElementById("canvas");
+      const canvas = canvasElement.getContext("2d");
+      const loadingMessage = document.getElementById("loadingMessage");
+      const outputContainer = document.getElementById("output");
+      const outputMessage = document.getElementById("outputMessage");
+      const ok = document.getElementById("ok");
+      let qrtxt;
+
+      function drawLine(begin, end, color) {
+        canvas.beginPath();
+        canvas.moveTo(begin.x, begin.y);
+        canvas.lineTo(end.x, end.y);
+        canvas.lineWidth = 4;
+        canvas.strokeStyle = color;
+        canvas.stroke();
+      }
+  
+      // Use facingMode: environment to attemt to get the front camera on phones
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+        video.srcObject = stream;
+        video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+        video.play();
+        requestAnimationFrame(tick);
+      });
+  
+      async function tick() {
+        loadingMessage.innerText = "⌛ Loading video..."
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          loadingMessage.hidden = true;
+          canvasElement.hidden = false;
+          outputContainer.hidden = false;
+  
+          canvasElement.height = video.videoHeight;
+          canvasElement.width = video.videoWidth;
+          canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+          const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
+          if (code) {
+            drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
+            drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
+            drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
+            drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+            qrtxt=code.data                    
+            handleQRCodeScan(qrtxt);
+
+            async function handleQRCodeScan(qrData) {
+              // サーバーにPOSTリクエストを送信
+              const response = await fetch('/check-in', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ id: qrData }),
+            });
+
+            if (!response.ok) {
+              // サーバーからのエラーメッセージを表示
+              const errorMessage = await response.text();
+            } else {
+              // サーバーから正常なレスポンスを受け取った場合
+              const data = await response.json();
+              console.log("レスポンスデータ:", data);
+              if (data.url) {
+                window.location.href = data.url + "?sessionId=" + data.sessionId;
+              }
+            }
+            }
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+  
+    </script>
+        
+    </main>
+    <aside id="right"></aside>
+    <aside id="left"></aside>
+    <footer>
+      <div class="fixed-text">created by <a href="https://github.com/kuwachi626">@kuwachi626</a></div>
+    </footer>
+    <script src="bgimg.js"></script>
+</body>
+</html>

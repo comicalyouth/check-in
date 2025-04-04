@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>こみかるスタンプ</title>
+    <link rel="stylesheet" href="./style.css"/>
+    <link rel="stylesheet" href="./inquiry.css"/>
+    <link rel="icon" href="favicon.ico">
+</head>
+<body class="dynamic-background">
+    <header>
+        <div id="header-title">  
+            <h1>こみかるスタンプ</h1>
+        </div>
+    </header>
+    <main>
+
+        <div id="mainLogo">
+            <img src="./img/logo.png">
+        </div>
+
+        <li>
+            <button onclick="showThankYouModal()">チェックイン</button>
+        </li>
+
+        <div class="inquiry" style="margin-bottom: 20px;">
+            <form class="c-form" id="contactForm">
+                <div class="c-form__item">
+                    <label class="c-form__label" for="field-name">ニックネーム<span class="c-form__required">必須</span></label>
+                    <input class="c-form__input" id="field-name" placeholder="こみっち" type="text" required="required" />
+                </div>
+                <div class="c-form__item">
+                    <label class="c-form__label">年齢<span class="c-form__required">必須</span></label>
+                    <div id="ageList" class="c-form__radio">
+                        <li>
+                            <input type="radio" id="age10" name="age" value="10代" required>
+                            10代
+                        </li>
+                        <li>
+                            <input type="radio" id="age20" name="age" value="20代" required>
+                            20代
+                        </li>
+                        <li>
+                            <input type="radio" id="age30" name="age" value="30代" required>
+                            30代
+                        </li>
+                        <li>
+                            <input type="radio" id="age40" name="age" value="40代" required>
+                            40代
+                        </li>
+                        <li>
+                            <input type="radio" id="age50" name="age" value="50代" required>
+                            50代
+                        </li>
+                        <li>
+                            <input type="radio" id="age60" name="age" value="60代" required>
+                            60代
+                        </li>
+                        <li>
+                            <input type="radio" id="age70" name="age" value="70代" required>
+                            70代
+                        </li>
+                        <li>
+                            <input type="radio" id="age-other" name="age" value="その他" required>
+                            その他
+                        </li>
+                    </div>
+                    <div id="other-age-input" class="c-form__item" style="display:none;">
+                        <input type="text" id="ageForm" class="c-form__input" placeholder="〇〇代">
+                    </div>
+                </div>
+                <div class="c-form__item">
+                    <label class="c-form__label">所属<span class="c-form__required">必須</span></label>
+                    <div id="affiliationList" class="c-form__radio">
+                        <li>
+                            <input type="radio" id="elementary" name="affiliation" value="小学生" required>
+                            小学生
+                        </li>
+                        <li>
+                            <input type="radio" id="junior" name="affiliation" value="中学生" required>
+                            中学生
+                        </li>
+                        <li>
+                            <input type="radio" id="high" name="affiliation" value="高校生" required>
+                            高校生
+                        </li>
+                        <li>
+                            <input type="radio" id="university" name="affiliation" value="大学生 / 大学院生" required>
+                            大学(院)生
+                        </li>
+                        <li>
+                            <input type="radio" id="adult" name="affiliation" value="大人" required>
+                            大人
+                        </li>
+                        <li>
+                            <input type="radio" id="adult" name="affiliation" value="こみかる運営" required>
+                            こみかる運営
+                        </li>
+                    </div>
+                </div>   
+                <div class="c-form__item">
+                    <label class="c-form__label">性別</label>
+                    <div class="c-form__radio">
+                        <li>
+                            <input type="radio" id="gender-male" name="gender" value="男性" required>
+                            男性
+                        </li>
+                        <li>
+                            <input type="radio" id="gender-female" name="gender" value="女性" required>
+                            女性
+                        </li>
+                        <li>
+                            <input type="radio" id="gender-other" name="gender" value="その他" required>
+                            その他
+                        </li>
+                    </div>
+                </div>
+                <div class="c-form__item">
+                    <label class="c-form__label">開催地<span class="c-form__required">必須</span></label>
+                    <div id="venueList" class="c-form__radio">
+                        <li>
+                            <input type="radio" id="venue-lpa" name="venue" value="エルパ" required>
+                            エルパ
+                        </li>
+                        <li>
+                            <input type="radio" id="venue-bell" name="venue" value="ベル" required>
+                            ベル
+                        </li>
+                        <li>
+                            <input type="radio" id="venue-vio" name="venue" value="大野VIO" required>
+                            大野VIO
+                        </li>
+                        <li>
+                            <input type="radio" id="venue-takefu-al" name="venue" value="武生アルプラザ" required>
+                            武生アルプラザ
+                        </li>
+                        <li>
+                            <input type="radio" id="venue-turuga-al" name="venue" value="敦賀アルプラザ" required>
+                            敦賀アルプラザ
+                        </li>
+                        <li>
+                            <input type="radio" id="venue-other" name="venue" value="その他" required>
+                            その他
+                        </li>
+                    </div>
+                    <div id="other-venue-input" class="c-form__item" style="display:none;">
+                        <input type="text" id="venueForm" class="c-form__input" placeholder="〇〇">
+                    </div>
+                </div>
+                <div class="c-form__item">
+                    <label class="c-form__label">こみかるにくるのは何回目？<span class="c-form__required">必須</span></label>
+                    <div class="c-form__radio">
+                        <li>
+                            <input type="radio" id="first-time" name="time" value="初めて" required>
+                            初めて
+                        </li>
+                        <li>
+                            <input type="radio" id="subsequent-times" name="time" value="2回目以上" required>
+                            ２回目以上
+                        </li>
+                    </div>
+                    <!-- 「その他」を選択した場合に表示される入力フィールド -->
+                    <div id="other-time-input" class="c-form__item" style="display:none;">
+                        <input type="text" id="timesForm" class="c-form__input" placeholder="だいたいでいいよ">
+                    </div>
+                </div>                
+                <div class="c-form__item">
+                    <label class="c-form__label" for="field-message">こみかるに一言！！</label>
+                    <textarea class="c-form__input" id="field-message" placeholder="意見・要望・感想等なんでもどぞ！！"></textarea>
+                </div>
+                <div class="c-form__submit">
+                    <button id="checkin" type="button">確認する</button>
+                </div>
+            </form>
+        </div>
+    
+        <!-- モーダルウィンドウ -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <h2>内容を確認してください</h2>
+                <p><strong class="item">ニックネーム</strong> <br><span id="confirmName"></span></p>
+                <p id="confirmAgeContent"><strong class="item">年齢</strong> <br><span id="confirmAge"></span></p>
+                <p id="confirmOtherAgeContent"><strong class="item">年齢</strong> <br><span id="confirmOtherAge"></span></p>
+                <p><strong class="item">所属</strong> <br><span id="confirmAffiliation"></span></p>
+                <p><strong class="item">性別</strong> <br><span id="confirmGender"></span></p>
+                <p id="confirmVenueContent"><strong class="item">開催地</strong> <br><span id="confirmVenue"></span></p>
+                <p id="confirmOtherVenueContent"><strong class="item">開催地</strong> <br><span id="confirmOtherVenue"></span></p>
+                <p id="confirmTimesContent"><strong class="item">何回目</strong> <br><span id="confirmTimes"></span></p>
+                <p id="confirmSubsequentTimesContent"><strong class="item">何回目</strong> <br><span id="confirmSubsequentTimes"></span></p>
+                <p><strong class="item">メッセージ内容</strong> <br><span id="confirmMessage"></span></p>
+                <ul>
+                    <li>
+                        <button onclick="closeModal()">修正する</button>
+                    </li>
+                    <li>
+                        <button onclick="submitForm()">チェックイン</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+    <aside id="right"></aside>
+    <aside id="left"></aside>
+    <footer>
+        <div class="fixed-text">created by <a href="https://github.com/kuwachi626">@kuwachi626</a></div>
+    </footer>
+    <script src="script.js"></script>
+    <script src="bgimg.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>こみかるスタンプ</title>
+    <link rel="stylesheet" href="./style.css"/>
+    <link rel="icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="./img/appLogo.png">
+    <link rel="icon" type="image/png" href="./img/appLogo.png">
+</head>
+<body class="dynamic-background" oncontextmenu="return false;">
+    <header>
+        <div id="header-title">  
+            <h1>こみかるスタンプ</h1>
+        </div>
+    </header>
+    <main>
+        <div id="mainLogo">
+            <img src="./img/logo.png">
+        </div>
+
+        <div id="stampCard">
+            <div class="stamp"></div>
+            <div class="stamp"></div>
+            <div class="stamp"></div>
+            <div class="stamp"></div>
+            <div class="stamp"></div>
+            <div class="stamp"></div>
+        </div>
+
+        <div id="reward">
+            <div id="collection">
+                <p id="cnt">コンプリート回数：０</p>
+                <button id="collectionBtn" onclick="location.href='./stamp.html'">コレクション</button>
+            </div>
+            <button id="exchange">コンプリート</button>
+        </div>
+
+        <div id="popup-wrapper">
+            <div id="popup-inside">
+                <div id="message">
+                    <h2>スタンプが不足しています！！</h3>
+                </div>
+            </div>
+        </div>
+        <div id="popup2-wrapper">
+            <div id="popup2-inside">
+                <div id="message">
+                    <h2>スタンプコンプリート！！</h2>
+                    <div class="blank">
+                        <p>&nbsp;</p>
+                    </div>
+                    <p>この画面をこみかるメンバーに見せてね</p>
+                </div>
+                <div id="choice">
+                    <button id="btn-no">いいえ</button>
+                    <button id="btn-yes">交換</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <p id="check-message"></p>
+        </div>
+
+        <div id="qrRead">
+            <button id="checkin">チェックイン</button>
+        </div>
+
+    </main>
+    <aside id="right"></aside>
+    <aside id="left"></aside>
+    <footer>
+        <div class="fixed-text">created by <a href="https://www.instagram.com/kuwachi626/profilecard/?igsh=MWUzeXhxaWk1amdncA==">@kuwachi626</a></div>
+    </footer>
+    <script src="getStamp.js"></script>
+    <script src="bgimg.js"></script>
+</body>
+</html>
