@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   if (req.method === "POST" && pathname === "/check-in") {
     try {
       const { id } = await req.json();
-      if (id === "comiculCheckIn") {
+      if (id === "comiculCheckIn" || id === "https://comiculstamp.deno.dev/") {
         const sessionId = crypto.randomUUID();
         sessions.set(sessionId, { createdAt: Date.now() });
         return new Response(
