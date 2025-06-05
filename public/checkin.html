@@ -176,12 +176,37 @@
         </div>
 
         <script type="module">
-        const saved = [
+        const items_for_save = [
             "field-name",
             "age10", "age20", "age30", "age40", "age50", "age60", "age70", "age-other", "ageForm",
-            "elementary", "junior", "high", "university", "adult", "adult",
+            "elementary", "junior", "high", "university", "adult", "operation",
             "gender-male", "gender-female", "gender-other",
         ];
+        //localStorage.clear();
+        for (const item of items_for_save) {
+            const c = document.getElementById(item);
+            c.oninput = () => {
+                for (const item of items_for_save) {
+                    const c = document.getElementById(item);
+                    if (c.type == "text") {
+                        localStorage.setItem(item, c.value);
+                        //console.log("setItem", item, c.value);
+                    } else {
+                        localStorage.setItem(item, c.checked);
+                        //console.log("setItem", item, c.checked);
+                    }
+                }
+            };
+            const bk = localStorage.getItem(item);
+            //console.log("getItem", item, bk);
+            if (bk !== undefined) {
+                if (c.type == "text") {
+                    c.value = bk;
+                } else {
+                    c.checked = bk == "true";
+                }
+            }
+        }
         </script>
     
         <!-- モーダルウィンドウ -->
