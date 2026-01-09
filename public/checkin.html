@@ -20,10 +20,6 @@
             <img src="./img/logo.png">
         </div>
 
-        <li>
-            <button onclick="showThankYouModal()">チェックイン</button>
-        </li>
-
         <div class="inquiry" style="margin-bottom: 20px;">
             <form class="c-form" id="contactForm">
                 <div class="c-form__item">
@@ -69,6 +65,10 @@
                     <div id="other-age-input" class="c-form__item" style="display:none;">
                         <input type="text" id="ageForm" class="c-form__input" placeholder="〇〇代">
                     </div>
+                </div>
+                <div class="c-form__item">
+                    <label class="c-form__label">子連れの方は、人数を書いてください<br>（未就学児〇名/小学生〇名）</label>
+                    <input class="c-form__input" id="childCountForm" placeholder="未就学児〇名/小学生〇名" type="text" />
                 </div>
                 <div class="c-form__item">
                     <label class="c-form__label">所属<span class="c-form__required">必須</span></label>
@@ -140,6 +140,14 @@
                             敦賀アルプラザ
                         </li>
                         <li>
+                            <input type="radio" id="venue-eiheiji" name="venue" value="永平寺こみかる" required>
+                            永平寺こみかる
+                        </li>
+                        <li>
+                            <input type="radio" id="venue-mikuni-hi" name="venue" value="三国高校" required>
+                            三国高校
+                        </li>
+                        <li>
                             <input type="radio" id="venue-other" name="venue" value="その他" required>
                             その他
                         </li>
@@ -169,6 +177,24 @@
                     <label class="c-form__label" for="field-message">こみかるに一言！！</label>
                     <textarea class="c-form__input" id="field-message" placeholder="意見・要望・感想等なんでもどぞ！！"></textarea>
                 </div>
+                <div class="c-form__item">
+                    <label class="c-form__label">こみかる参加について<span class="c-form__required">必須</span></label>
+                    <div class="consent__text">
+                        <p><span style="font-weight: bold;">こみかるは「若者が想い想いに過ごせる居場所」を目的としています!</span></p>
+                        <p>そのためには、皆さんのちょっとした心遣いがとても大切です。すべての参加者が気持ちよく過ごせるように、ご協力をお願いします。</p>
+                        <p><span style="font-weight: bold;">以下のいずれかの行為をした場合は、参加をお断りすることがあります。</span></p>
+                        <ul>
+                            <li>他の参加者への誹謗中傷、嫌がらせ、無断撮影などの迷惑行為</li>
+                            <li>運営に許可のない「政治・宗教・マルチ商法・商品販売・イベント招待」などの勧誘行為</li>
+                            <li>特定の相手へのお誘いなど、人に不快感を与える行為</li>
+                            <li>イベントや運営の進行を妨げる行為</li>
+                        </ul>
+                    </div>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="agreement-checkbox" required style="margin-right: 8px; width: 18px; height: 18px; cursor: pointer;">
+                        <span style="font-size: 16px; font-weight: bold;">上記の内容に同意する</span>
+                    </label>
+                </div>
                 <div class="c-form__submit">
                     <button id="checkin" type="button">確認する</button>
                 </div>
@@ -176,37 +202,37 @@
         </div>
 
         <script type="module">
-        const items_for_save = [
-            "field-name",
-            "age10", "age20", "age30", "age40", "age50", "age60", "age70", "age-other", "ageForm",
-            "elementary", "junior", "high", "university", "adult", "operation",
-            "gender-male", "gender-female", "gender-other",
-        ];
-        //localStorage.clear();
-        for (const item of items_for_save) {
-            const c = document.getElementById(item);
-            c.oninput = () => {
-                for (const item of items_for_save) {
-                    const c = document.getElementById(item);
+            const items_for_save = [
+                "field-name",
+                "age10", "age20", "age30", "age40", "age50", "age60", "age70", "age-other", "ageForm",
+                "elementary", "junior", "high", "university", "adult", "operation",
+                "gender-male", "gender-female", "gender-other",
+            ];
+            //localStorage.clear();
+            for (const item of items_for_save) {
+                const c = document.getElementById(item);
+                c.oninput = () => {
+                    for (const item of items_for_save) {
+                        const c = document.getElementById(item);
+                        if (c.type == "text") {
+                            localStorage.setItem(item, c.value);
+                            //console.log("setItem", item, c.value);
+                        } else {
+                            localStorage.setItem(item, c.checked);
+                            //console.log("setItem", item, c.checked);
+                        }
+                    }
+                };
+                const bk = localStorage.getItem(item);
+                //console.log("getItem", item, bk);
+                if (bk !== undefined) {
                     if (c.type == "text") {
-                        localStorage.setItem(item, c.value);
-                        //console.log("setItem", item, c.value);
+                        c.value = bk;
                     } else {
-                        localStorage.setItem(item, c.checked);
-                        //console.log("setItem", item, c.checked);
+                        c.checked = bk == "true";
                     }
                 }
-            };
-            const bk = localStorage.getItem(item);
-            //console.log("getItem", item, bk);
-            if (bk !== undefined) {
-                if (c.type == "text") {
-                    c.value = bk;
-                } else {
-                    c.checked = bk == "true";
-                }
             }
-        }
         </script>
     
         <!-- モーダルウィンドウ -->
@@ -216,6 +242,7 @@
                 <p><strong class="item">ニックネーム</strong> <br><span id="confirmName"></span></p>
                 <p id="confirmAgeContent"><strong class="item">年齢</strong> <br><span id="confirmAge"></span></p>
                 <p id="confirmOtherAgeContent"><strong class="item">年齢</strong> <br><span id="confirmOtherAge"></span></p>
+                <p id="confirmChildCountContent"><strong class="item">子供人数</strong> <br><span id="confirmChildCount"></span></p>
                 <p><strong class="item">所属</strong> <br><span id="confirmAffiliation"></span></p>
                 <p><strong class="item">性別</strong> <br><span id="confirmGender"></span></p>
                 <p id="confirmVenueContent"><strong class="item">開催地</strong> <br><span id="confirmVenue"></span></p>

@@ -8,7 +8,7 @@ window.onload = async function () {
     } catch (error) {
         console.error("エラーが発生しました:", error);
     }
-}
+};
 
 const dbName = "ComiculCheckInDB";
 const storeName = "CheckInDate";
@@ -25,7 +25,7 @@ function openDatabase() {
         const request = indexedDB.open(dbName, 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            db.createObjectStore(storeName, { keyPath: 'id' }); // keyPathを'id'に設定
+            db.createObjectStore(storeName, { keyPath: "id" }); // keyPathを'id'に設定
         };
         request.onsuccess = (event) => {
             resolve(event.target.result);
@@ -41,7 +41,7 @@ function openDatabase2() {
         const request = indexedDB.open(dbName2, 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            db.createObjectStore(storeName2, { keyPath: 'id' }); // keyPathを'id'に設定
+            db.createObjectStore(storeName2, { keyPath: "id" }); // keyPathを'id'に設定
         };
         request.onsuccess = (event) => {
             resolve(event.target.result);
@@ -57,7 +57,7 @@ function openDatabaseDate() {
         const request = indexedDB.open(dbName3, 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            db.createObjectStore(storeName3, { keyPath: 'id' }); // keyPathを'id'に設定
+            db.createObjectStore(storeName3, { keyPath: "id" }); // keyPathを'id'に設定
         };
         request.onsuccess = (event) => {
             resolve(event.target.result);
@@ -70,7 +70,7 @@ function openDatabaseDate() {
 
 function checkIfIdExists(db, id) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName], 'readonly');
+        const transaction = db.transaction([storeName], "readonly");
         const store = transaction.objectStore(storeName);
         const request = store.get(id);
         request.onsuccess = () => {
@@ -84,7 +84,7 @@ function checkIfIdExists(db, id) {
 
 function checkIfIdExists2(db, id) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName2], 'readonly');
+        const transaction = db.transaction([storeName2], "readonly");
         const store = transaction.objectStore(storeName2);
         const request = store.get(id);
         request.onsuccess = () => {
@@ -98,11 +98,11 @@ function checkIfIdExists2(db, id) {
 
 function checkIfDateExists(db, date) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName3], 'readonly');
+        const transaction = db.transaction([storeName3], "readonly");
         const store = transaction.objectStore(storeName3);
         const request = store.getAll();
         request.onsuccess = () => {
-            const exists = request.result.some(item => item.date === date);
+            const exists = request.result.some((item) => item.date === date);
             resolve(exists);
         };
 
@@ -123,7 +123,10 @@ function fetchAllEntries(db) {
         };
 
         request.onerror = function (event) {
-            console.error("データの取得に失敗しました:", event.target.errorCode);
+            console.error(
+                "データの取得に失敗しました:",
+                event.target.errorCode,
+            );
             reject(event.target.errorCode);
         };
     });
@@ -140,7 +143,8 @@ function renderStamps(entries) {
     sortedEntries.forEach((entry, index) => {
         if (stampDivs[index] && entry.stamp) {
             // 画像を埋め込む
-            stampDivs[index].innerHTML = `<img src="${entry.stamp}" alt="スタンプ">`;
+            stampDivs[index].innerHTML =
+                `<img src="${entry.stamp}" alt="スタンプ">`;
         }
     });
 }
@@ -168,7 +172,7 @@ async function displayCnt(db) {
         if (idExists) {
             if (result) {
                 cntField.innerHTML = `コンプリート回数：${result.count}`;
-                if (result.count !== 0){
+                if (result.count !== 0) {
                     setInterval(() => createStar(result.count), 100);
                 }
             } else {
@@ -185,93 +189,108 @@ async function displayCnt(db) {
     }
 }
 
-const popupWrapper = document.getElementById('popup-wrapper');
-const popupWrapper2 = document.getElementById('popup2-wrapper');
-const btnYes = document.getElementById('btn-yes');
-const btnNo = document.getElementById('btn-no');
+const popupWrapper = document.getElementById("popup-wrapper");
+const popupWrapper2 = document.getElementById("popup2-wrapper");
+const btnYes = document.getElementById("btn-yes");
+const btnNo = document.getElementById("btn-no");
 let count = 0;
 
-document.getElementById("exchange").onclick = async function() {
-  const db = await openDatabase();
-  const db2 = await openDatabase2();
-  const stamps= await countEntries(db);
+document.getElementById("exchange").onclick = async function () {
+    const db = await openDatabase();
+    const db2 = await openDatabase2();
+    const stamps = await countEntries(db);
 
-  if (stamps >= 1){
-    count = await getCntStamp(db2);
-    popupWrapper2.style.display = "block";
-    if (!popupWrapper2.dataset.listenerAdded) {
-        popupWrapper2.dataset.listenerAdded = true;
-  
-        popupWrapper2.addEventListener('click', e => {
-          if (
-            e.target.id === "popup2-wrapper" || 
-            e.target.closest("#btn-no") // btn-noに近い要素をクリックした場合も検知
-          ) {
-            popupWrapper2.style.display = 'none';
-          } else if (e.target.closest("#btn-yes")) {
-            count++;
-            saveReward(db2, count);
-            doReloadWithCache();
-            popupWrapper2.style.display = 'none';
-          }
-        });
-      }
-    } else {
-    popupWrapper.style.display = "block";
+    if (stamps >= 6) {
+        count = await getCntStamp(db2);
+        popupWrapper2.style.display = "block";
+        if (!popupWrapper2.dataset.listenerAdded) {
+            popupWrapper2.dataset.listenerAdded = true;
 
-    // イベントリスナーを1度だけ登録
-    if (!popupWrapper.dataset.listenerAdded) {
-      popupWrapper.dataset.listenerAdded = true;
-
-      popupWrapper.addEventListener('click', e => {
-        if (e.target.id === "popup-wrapper") {
-          popupWrapper.style.display = 'none';
+            popupWrapper2.addEventListener("click", (e) => {
+                if (
+                    e.target.id === "popup2-wrapper" ||
+                    e.target.closest("#btn-no") // btn-noに近い要素をクリックした場合も検知
+                ) {
+                    popupWrapper2.style.display = "none";
+                } else if (e.target.closest("#btn-yes")) {
+                    doReloadWithCache(count, db2);
+                    popupWrapper2.style.display = "none";
+                }
+            });
         }
-      });
+    } else {
+        popupWrapper.style.display = "block";
+
+        // イベントリスナーを1度だけ登録
+        if (!popupWrapper.dataset.listenerAdded) {
+            popupWrapper.dataset.listenerAdded = true;
+
+            popupWrapper.addEventListener("click", (e) => {
+                if (e.target.id === "popup-wrapper") {
+                    popupWrapper.style.display = "none";
+                }
+            });
+        }
     }
-  }
 };
 
 function countEntries(db) {
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([storeName], "readonly");
-      const objectStore = transaction.objectStore(storeName);
-      const countRequest = objectStore.count();
-  
-      countRequest.onsuccess = function() {
-        resolve(countRequest.result);
-        return countRequest.result
-      };
-  
-      countRequest.onerror = function(event) {
-        reject(event.target.errorCode);
-      };
-    });
-  }
+        const transaction = db.transaction([storeName], "readonly");
+        const objectStore = transaction.objectStore(storeName);
+        const countRequest = objectStore.count();
 
-  function doReloadWithCache() {
+        countRequest.onsuccess = function () {
+            resolve(countRequest.result);
+            return countRequest.result;
+        };
+
+        countRequest.onerror = function (event) {
+            reject(event.target.errorCode);
+        };
+    });
+}
+
+function doReloadWithCache(count, db2) {
+    const messageElement = document.getElementById("check-message");
+    if (messageElement) {
+        messageElement.textContent = "コンプリート処理中です...";
+    }
     const request = indexedDB.deleteDatabase(dbName);
 
     request.onsuccess = function () {
-      // キャッシュを利用してリロード
-      window.location.reload(false);
+        count++;
+        saveReward(db2, count);
+        // キャッシュを利用してリロード
+        location.reload();
     };
-  
-    request.onerror = function (event) {
-      console.error("データベースの削除に失敗しました:", event.target.error);
-    };
-  
-    request.onblocked = function () {
-      console.warn("データベースの削除がブロックされています。全てのタブを閉じてから再試行してください。");
-      window.location.reload(false);
-    };
-  }
 
-  
+    request.onerror = function (event) {
+        console.error("データベースの削除に失敗しました:", event.target.error);
+        // エラーメッセージを画面に表示
+        const messageElement = document.getElementById("check-message");
+        if (messageElement) {
+            messageElement.textContent =
+                "コンプリート処理中にエラーが発生しました。もう一度お試しください。";
+        }
+    };
+
+    request.onblocked = function () {
+        console.warn(
+            "データベースの削除がブロックされています。全てのタブを閉じてから再試行してください。",
+        );
+        // エラーメッセージを画面に表示
+        const messageElement = document.getElementById("check-message");
+        if (messageElement) {
+            messageElement.textContent =
+                "処理がブロックされています。全てのタブを閉じてから再試行してください。";
+        }
+    };
+}
 
 function saveReward(db, point) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName2], 'readwrite');
+        const transaction = db.transaction([storeName2], "readwrite");
         const store = transaction.objectStore(storeName2);
         const request = store.put({ id: "cntReward", count: point });
         request.onsuccess = () => {
@@ -298,39 +317,38 @@ async function getCntStamp(db) {
             request.onerror = () => reject(request.error);
         });
 
-        return result.count
-
+        return result.count;
     } catch (error) {
         console.error("displayCnt関数でエラーが発生しました:", error);
         cntField.innerHTML = "データが取得できませんでした。";
     }
 }
 
-document.getElementById("checkin").onclick = async function() {
+document.getElementById("checkin").onclick = async function () {
     const messageElement = document.getElementById("check-message");
     const todayId = getTodayDateString();
 
     const db = await openDatabaseDate();
     const idExists = await checkIfDateExists(db, todayId);
     const db2 = await openDatabase();
-    const stamps= await countEntries(db2);
+    const stamps = await countEntries(db2);
 
     if (idExists) {
         messageElement.textContent = "既にチェックイン済みです。";
     } else {
-        if (stamps >= 6){
+        if (stamps >= 6) {
             messageElement.textContent = "スタンプがいっぱいだよ～！";
         } else {
-            window.location.href = './read.html';
+            window.location.href = "./read.html";
         }
     }
-}
+};
 
 function getTodayDateString() {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0'); // 月は0から始まるので1を足す
-    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // 月は0から始まるので1を足す
+    const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 }
 
@@ -338,22 +356,23 @@ const createStar = (cnt) => {
     const star = document.createElement("div");
     star.classList.add("stars");
 
-    const left = Math.random() * (window.innerWidth * 0.9) + (window.innerWidth * 0.05);
+    const left = Math.random() * (window.innerWidth * 0.9) +
+        (window.innerWidth * 0.05);
     const duration = Math.random() * 5 + 3;
 
     star.style.left = `${left}px`;
     star.style.animationDuration = `${duration}s`;
     let color;
-    switch (cnt){
+    switch (cnt) {
         case 1:
             color = "#ffffff";
-        break;
+            break;
         case 2:
             color = "#9A6229";
-        break;
+            break;
         case 3:
             color = "#c9caca";
-        break;
+            break;
         default:
             color = "#e6b422";
     }
@@ -362,6 +381,6 @@ const createStar = (cnt) => {
 
     // アニメーションが終わったら削除
     setTimeout(() => {
-      star.remove();
+        star.remove();
     }, duration * 1000);
-  };
+};
