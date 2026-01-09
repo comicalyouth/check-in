@@ -4,13 +4,34 @@ const dbName3 = "ComiculDate";
 const storeName3 = "Date";
 const dbName4 = "ComiculImgDB";
 const storeName4 = "Img";
-const stampList = ["img/stamp1.png", "img/stamp2.png", "img/stamp3.png", "img/stamp4.png", "img/stamp5.png", "img/stamp6.png", "img/stamp7.png", "img/stamp8.png", "img/stamp9.png", "img/stamp10.png", "img/stamp11.png", "img/stamp12.png", "img/stamp13.png", "img/stamp14.png", "img/stamp15.png", "img/stamp16.png", "img/stamp17.png", "img/stamp18.png", "img/stamp19.png", "img/stamp20.png"]
+const stampList = [
+    "img/stamp1.png",
+    "img/stamp2.png",
+    "img/stamp3.png",
+    "img/stamp4.png",
+    "img/stamp5.png",
+    "img/stamp6.png",
+    "img/stamp7.png",
+    "img/stamp8.png",
+    "img/stamp9.png",
+    "img/stamp10.png",
+    "img/stamp11.png",
+    "img/stamp12.png",
+    "img/stamp13.png",
+    "img/stamp14.png",
+    "img/stamp15.png",
+    "img/stamp16.png",
+    "img/stamp17.png",
+    "img/stamp18.png",
+    "img/stamp19.png",
+    "img/stamp20.png",
+];
 
 function getTodayDateString() {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 }
 
@@ -19,7 +40,7 @@ function openDatabase() {
         const request = indexedDB.open(dbName, 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            db.createObjectStore(storeName, { keyPath: 'id' });
+            db.createObjectStore(storeName, { keyPath: "id" });
         };
         request.onsuccess = (event) => {
             resolve(event.target.result);
@@ -35,7 +56,7 @@ function openDatabaseDate() {
         const request = indexedDB.open(dbName3, 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            db.createObjectStore(storeName3, { keyPath: 'id' });
+            db.createObjectStore(storeName3, { keyPath: "id" });
         };
         request.onsuccess = (event) => {
             resolve(event.target.result);
@@ -51,7 +72,7 @@ function openDatabaseImg() {
         const request = indexedDB.open(dbName4, 1);
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
-            db.createObjectStore(storeName4, { keyPath: 'id' });
+            db.createObjectStore(storeName4, { keyPath: "id" });
         };
         request.onsuccess = (event) => {
             resolve(event.target.result);
@@ -65,9 +86,9 @@ function openDatabaseImg() {
 function saveClick(db) {
     return new Promise((resolve, reject) => {
         const stamp = stampList[Math.floor(Math.random() * stampList.length)];
-        const transaction = db.transaction([storeName], 'readwrite');
+        const transaction = db.transaction([storeName], "readwrite");
         const store = transaction.objectStore(storeName);
-        const data = { id: getTodayDateString(), stamp: stamp};
+        const data = { id: getTodayDateString(), stamp: stamp };
         const request = store.put(data);
         request.onsuccess = () => {
             resolve({ stamp: stamp, result: request.result });
@@ -80,9 +101,9 @@ function saveClick(db) {
 
 function saveDate(db) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName3], 'readwrite');
+        const transaction = db.transaction([storeName3], "readwrite");
         const store = transaction.objectStore(storeName3);
-        const data = { id: "Date", date: getTodayDateString()};
+        const data = { id: "Date", date: getTodayDateString() };
         const request = store.put(data);
         request.onsuccess = () => {
             resolve(request.result);
@@ -95,9 +116,9 @@ function saveDate(db) {
 
 function saveImg(db, img, cnt) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName4], 'readwrite');
+        const transaction = db.transaction([storeName4], "readwrite");
         const store = transaction.objectStore(storeName4);
-        const data = { id: img, cnt: cnt};
+        const data = { id: img, cnt: cnt };
         const request = store.put(data);
         request.onsuccess = () => {
             resolve(request.result);
@@ -110,7 +131,7 @@ function saveImg(db, img, cnt) {
 
 function checkIfIdExists(db, id) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName], 'readonly');
+        const transaction = db.transaction([storeName], "readonly");
         const store = transaction.objectStore(storeName);
         const request = store.get(id);
         request.onsuccess = () => {
@@ -124,7 +145,7 @@ function checkIfIdExists(db, id) {
 
 function checkIfIdExistsImg(db, id) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName4], 'readonly');
+        const transaction = db.transaction([storeName4], "readonly");
         const store = transaction.objectStore(storeName4);
         const request = store.get(id);
         request.onsuccess = () => {
@@ -138,11 +159,11 @@ function checkIfIdExistsImg(db, id) {
 
 function checkIfDateExists(db, date) {
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName3], 'readonly');
+        const transaction = db.transaction([storeName3], "readonly");
         const store = transaction.objectStore(storeName3);
         const request = store.getAll();
         request.onsuccess = () => {
-            const exists = request.result.some(item => item.date === date);
+            const exists = request.result.some((item) => item.date === date);
             resolve(exists);
         };
 
@@ -159,14 +180,18 @@ function doReloadWithCache() {
 function openModal() {
     const name = document.getElementById("field-name").value;
     const age = document.querySelector('input[name="age"]:checked');
-    const otherAge = document.getElementById('ageForm').value;
-    const affiliation = document.querySelector('input[name="affiliation"]:checked');
+    const otherAge = document.getElementById("ageForm").value;
+    const childCount = document.getElementById("childCountForm").value;
+    const affiliation = document.querySelector(
+        'input[name="affiliation"]:checked',
+    );
     const gender = document.querySelector('input[name="gender"]:checked');
     const venue = document.querySelector('input[name="venue"]:checked');
-    const otherVenue = document.getElementById('venueForm').value;
+    const otherVenue = document.getElementById("venueForm").value;
     const times = document.querySelector('input[name="time"]:checked');
-    const subsequentTimes = document.getElementById('timesForm').value;
+    const subsequentTimes = document.getElementById("timesForm").value;
     const message = document.getElementById("field-message").value;
+    const agreementCheckbox = document.getElementById("agreement-checkbox");
 
     const ageValue = age ? age.value : "未選択";
     const genderValue = gender ? gender.value : "未選択";
@@ -174,59 +199,84 @@ function openModal() {
     const venueValue = venue ? venue.value : "未選択";
     const timesValue = times ? times.value : "未選択";
 
-    if (!name || ageValue === "未選択" || affiliationValue === "未選択" || venueValue === "未選択" || timesValue === "未選択") {
-        errorModal()
-        return
+    if (
+        !name || ageValue === "未選択" || affiliationValue === "未選択" ||
+        venueValue === "未選択" || timesValue === "未選択"
+    ) {
+        errorModal();
+        return;
     }
 
     if (ageValue === "その他" && !otherAge.trim()) {
-        ageErrorModal()
+        ageErrorModal();
         return;
     }
 
     if (venueValue === "その他" && !otherVenue.trim()) {
-        venueErrorModal()
+        venueErrorModal();
         return;
     }
 
     if (timesValue === "2回目以上" && !subsequentTimes.trim()) {
-        timesErrorModal()
+        timesErrorModal();
+        return;
+    }
+
+    if (!agreementCheckbox.checked) {
+        agreementErrorModal();
         return;
     }
 
     document.getElementById("confirmName").textContent = name;
-    
+
     if (ageValue === "その他") {
-        document.getElementById('confirmOtherAge').textContent = otherAge;
-        document.getElementById('confirmAgeContent').style.display = "none";
-        document.getElementById('confirmOtherAgeContent').style.display = "block";
+        document.getElementById("confirmOtherAge").textContent = otherAge;
+        document.getElementById("confirmAgeContent").style.display = "none";
+        document.getElementById("confirmOtherAgeContent").style.display =
+            "block";
     } else {
-        document.getElementById('confirmAge').textContent = age.value;
-        document.getElementById('confirmOtherAgeContent').style.display = "none";
-        document.getElementById('confirmAgeContent').style.display = "block";
+        document.getElementById("confirmAge").textContent = age.value;
+        document.getElementById("confirmOtherAgeContent").style.display =
+            "none";
+        document.getElementById("confirmAgeContent").style.display = "block";
     }
 
-    document.getElementById('confirmAffiliation').textContent = affiliation.value;
-    document.getElementById('confirmGender').textContent = genderValue;
+    if (!childCount) {
+        document.getElementById("confirmChildCountContent").style.display =
+            "none";
+    } else {
+        document.getElementById("confirmChildCountContent").style.display =
+            "block";
+        document.getElementById("confirmChildCount").textContent = childCount;
+    }
+
+    document.getElementById("confirmAffiliation").textContent =
+        affiliation.value;
+    document.getElementById("confirmGender").textContent = genderValue;
 
     if (venueValue === "その他") {
-        document.getElementById('confirmOtherVenue').textContent = otherVenue;
-        document.getElementById('confirmVenueContent').style.display = "none";
-        document.getElementById('confirmOtherVenueContent').style.display = "block";
+        document.getElementById("confirmOtherVenue").textContent = otherVenue;
+        document.getElementById("confirmVenueContent").style.display = "none";
+        document.getElementById("confirmOtherVenueContent").style.display =
+            "block";
     } else {
-        document.getElementById('confirmVenue').textContent = venue.value;
-        document.getElementById('confirmOtherVenueContent').style.display = "none";
-        document.getElementById('confirmVenueContent').style.display = "block";
+        document.getElementById("confirmVenue").textContent = venue.value;
+        document.getElementById("confirmOtherVenueContent").style.display =
+            "none";
+        document.getElementById("confirmVenueContent").style.display = "block";
     }
-    
+
     if (timesValue === "2回目以上") {
-        document.getElementById('confirmSubsequentTimes').textContent = subsequentTimes;
-        document.getElementById('confirmTimesContent').style.display = "none";
-        document.getElementById('confirmSubsequentTimesContent').style.display = "block";
+        document.getElementById("confirmSubsequentTimes").textContent =
+            subsequentTimes;
+        document.getElementById("confirmTimesContent").style.display = "none";
+        document.getElementById("confirmSubsequentTimesContent").style.display =
+            "block";
     } else {
-        document.getElementById('confirmTimes').textContent = times.value;
-        document.getElementById('confirmSubsequentTimesContent').style.display = "none";
-        document.getElementById('confirmTimesContent').style.display = "block";
+        document.getElementById("confirmTimes").textContent = times.value;
+        document.getElementById("confirmSubsequentTimesContent").style.display =
+            "none";
+        document.getElementById("confirmTimesContent").style.display = "block";
     }
     document.getElementById("confirmMessage").textContent = message;
 
@@ -240,15 +290,18 @@ function closeModal() {
 function submitForm() {
     const name = document.getElementById("field-name").value;
     const age = document.querySelector('input[name="age"]:checked').value;
-    const otherAge = document.getElementById('ageForm').value;
-    const affiliation = document.querySelector('input[name="affiliation"]:checked').value;
+    const otherAge = document.getElementById("ageForm").value;
+    const childCount = document.getElementById("childCountForm").value;
+    const affiliation =
+        document.querySelector('input[name="affiliation"]:checked').value;
     const gender = document.querySelector('input[name="gender"]:checked');
     const genderValue = gender ? gender.value : "未選択";
     const venue = document.querySelector('input[name="venue"]:checked').value;
-    const otherVenue = document.getElementById('venueForm').value;
+    const otherVenue = document.getElementById("venueForm").value;
     const times = document.querySelector('input[name="time"]:checked').value;
-    const subsequentTimes = document.getElementById('timesForm').value;
+    const subsequentTimes = document.getElementById("timesForm").value;
     const message = document.getElementById("field-message").value;
+    const agreementCheckbox = document.getElementById("agreement-checkbox");
 
     const formData = new FormData();
     formData.append("entry.1654571786", name);
@@ -256,6 +309,7 @@ function submitForm() {
     if (age === "その他") {
         formData.append("entry.864932330", otherAge);
     }
+    formData.append("entry.1246787910", childCount);
     formData.append("entry.698331776", affiliation);
     if (genderValue !== "未選択") {
         formData.append("entry.682017022", gender.value);
@@ -269,29 +323,48 @@ function submitForm() {
         formData.append("entry.1339972301", subsequentTimes);
     }
     formData.append("entry.1106892360", message);
+    formData.append(
+        "entry.1790208126",
+        agreementCheckbox.checked ? "同意する" : "同意しない",
+    );
 
-    fetch("https://docs.google.com/forms/u/0/d/e/1FAIpQLSeeWK01nT80BLZ7P-z5gRElv8lRuZzqBPCKshgtOGEt0OrZsQ/formResponse", {
-        method: "POST",
-        body: formData,
-        mode: "no-cors"
-    }).then(() => {
+    fetch(
+        "https://docs.google.com/forms/u/0/d/e/1FAIpQLSeeWK01nT80BLZ7P-z5gRElv8lRuZzqBPCKshgtOGEt0OrZsQ/formResponse",
+        {
+            method: "POST",
+            body: formData,
+            mode: "no-cors",
+        },
+    ).then(() => {
         document.getElementById("field-name").value = "";
-        document.querySelectorAll('input[name="age"]').forEach(input => (input.checked = false));
+        document.querySelectorAll('input[name="age"]').forEach(
+            (input) => (input.checked = false)
+        );
         document.getElementById("ageForm").value = "";
-        document.getElementById('other-age-input').style.display = 'none';
-        document.querySelectorAll('input[name="affiliation"]').forEach(input => (input.checked = false));
-        document.querySelectorAll('input[name="gender"]').forEach(input => (input.checked = false));
-        document.querySelectorAll('input[name="venue"]').forEach(input => (input.checked = false));
+        document.getElementById("other-age-input").styledisplay = "none";
+        document.getElementById("childCountForm").value = "";
+        document.querySelectorAll('input[name="affiliation"]').forEach(
+            (input) => (input.checked = false)
+        );
+        document.querySelectorAll('input[name="gender"]').forEach(
+            (input) => (input.checked = false)
+        );
+        document.querySelectorAll('input[name="venue"]').forEach(
+            (input) => (input.checked = false)
+        );
         document.getElementById("venueForm").value = "";
-        document.getElementById('other-venue-input').style.display = 'none';
-        document.querySelectorAll('input[name="time"]').forEach(input => (input.checked = false));
+        document.getElementById("other-venue-input").style.display = "none";
+        document.querySelectorAll('input[name="time"]').forEach(
+            (input) => (input.checked = false)
+        );
         document.getElementById("timesForm").value = "";
-        document.getElementById('other-time-input').style.display = 'none';
+        document.getElementById("other-time-input").style.display = "none";
         document.getElementById("field-message").value = "";
+        document.getElementById("agreement-checkbox").checked = false;
 
         document.getElementById("confirmationModal").style.display = "none";
         showThankYouModal();
-    }).catch(error => {
+    }).catch((error) => {
         console.error("送信エラー:", error);
     });
 }
@@ -311,16 +384,16 @@ function showThankYouModal() {
 
     document.body.appendChild(thankYouModal);
 
-    document.getElementById("check").onclick = async function() {
+    document.getElementById("check").onclick = async function () {
         const thankYouModal = document.getElementById("thankYouModal");
         const todayId = getTodayDateString();
-    
+
         try {
             const db = await openDatabase();
             const db2 = await openDatabaseDate();
             const db3 = await openDatabaseImg();
             const idExists = await checkIfIdExists(db, todayId);
-    
+
             if (idExists) {
                 console.error("Failed to save click to IndexedDB", error);
             } else {
@@ -328,7 +401,10 @@ function showThankYouModal() {
                 const idExistsImg = await checkIfIdExistsImg(db3, img.stamp);
                 await saveDate(db2);
                 if (idExistsImg) {
-                    const transaction = db3.transaction([storeName4], "readonly");
+                    const transaction = db3.transaction(
+                        [storeName4],
+                        "readonly",
+                    );
                     const objectStore = transaction.objectStore(storeName4);
                     const request = objectStore.get(img.stamp);
 
@@ -348,16 +424,16 @@ function showThankYouModal() {
                     const cnt = 1;
                     await saveImg(db3, img.stamp, cnt);
                 }
-                doReloadWithCache()
+                doReloadWithCache();
             }
         } catch (error) {
             console.error("Failed to save click to IndexedDB", error);
         }
-    
+
         if (thankYouModal) {
             thankYouModal.style.display = "none";
             thankYouModal.remove();
-            window.location.href = './index.html';
+            window.location.href = "./index.html";
         }
     };
 }
@@ -446,6 +522,27 @@ function timesErrorModal() {
     });
 }
 
+function agreementErrorModal() {
+    const errorModal = document.createElement("div");
+    errorModal.id = "errorModal";
+    errorModal.classList.add("modal");
+    errorModal.style.display = "flex";
+
+    errorModal.innerHTML = `
+        <div class="modal-content">
+            <h2>同意事項にチェックを<br>入れてください</h2>
+            <button onclick="closeErrorModal()">閉じる</button>
+        </div>
+    `;
+
+    document.body.appendChild(errorModal);
+    window.addEventListener("click", (event) => {
+        if (event.target === errorModal) {
+            errorModal.style.display = "none";
+        }
+    });
+}
+
 function checkinErrorModal() {
     const errorModal = document.createElement("div");
     errorModal.id = "errorModal";
@@ -497,55 +594,55 @@ function closeErrorModal() {
 }
 
 document.querySelectorAll('input[name="venue"]').forEach(function (radio) {
-    radio.addEventListener('change', function () {
-        const otherInput = document.getElementById('other-venue-input');
-        if (document.getElementById('venue-other').checked) {
-            otherInput.style.display = 'block';
+    radio.addEventListener("change", function () {
+        const otherInput = document.getElementById("other-venue-input");
+        if (document.getElementById("venue-other").checked) {
+            otherInput.style.display = "block";
         } else {
-            otherInput.style.display = 'none';
+            otherInput.style.display = "none";
         }
     });
 });
 
 document.querySelectorAll('input[name="time"]').forEach(function (radio) {
-    radio.addEventListener('change', function () {
-        const otherInput = document.getElementById('other-time-input');
-        if (document.getElementById('subsequent-times').checked) {
-            otherInput.style.display = 'block';
+    radio.addEventListener("change", function () {
+        const otherInput = document.getElementById("other-time-input");
+        if (document.getElementById("subsequent-times").checked) {
+            otherInput.style.display = "block";
         } else {
-            otherInput.style.display = 'none';
+            otherInput.style.display = "none";
         }
     });
 });
 
 document.querySelectorAll('input[name="age"]').forEach(function (radio) {
-    radio.addEventListener('change', function () {
-        const otherInput = document.getElementById('other-age-input');
-        if (document.getElementById('age-other').checked) {
-            otherInput.style.display = 'block';
+    radio.addEventListener("change", function () {
+        const otherInput = document.getElementById("other-age-input");
+        if (document.getElementById("age-other").checked) {
+            otherInput.style.display = "block";
         } else {
-            otherInput.style.display = 'none';
+            otherInput.style.display = "none";
         }
     });
 });
 
-document.getElementById("checkin").onclick = async function() {
+document.getElementById("checkin").onclick = async function () {
     const todayId = getTodayDateString();
 
     const db = await openDatabaseDate();
     const idExists = await checkIfDateExists(db, todayId);
     const db2 = await openDatabase();
-    const stamps= await countEntries(db2);
+    const stamps = await countEntries(db2);
     if (idExists) {
         checkinErrorModal();
     } else {
-        if (stamps >= 6){
-            stampCntErrorModal()
+        if (stamps >= 6) {
+            stampCntErrorModal();
         } else {
             openModal();
         }
     }
-}
+};
 
 function countEntries(db) {
     return new Promise((resolve, reject) => {
@@ -553,12 +650,12 @@ function countEntries(db) {
         const objectStore = transaction.objectStore(storeName);
         const countRequest = objectStore.count();
 
-        countRequest.onsuccess = function() {
+        countRequest.onsuccess = function () {
             resolve(countRequest.result);
-            return countRequest.result
+            return countRequest.result;
         };
 
-        countRequest.onerror = function(event) {
+        countRequest.onerror = function (event) {
             reject(event.target.errorCode);
         };
     });

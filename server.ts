@@ -1,4 +1,4 @@
-import { serveDir } from "https://deno.land/std@0.151.0/http/file_server.ts";
+import { serveDir } from "https://deno.land/std@0.224.0/http/file_server.ts";
 
 const sessions = new Map<string, { createdAt: number }>();
 const sessionTimeout = 30 * 60 * 1000; // 30分
@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   if (req.method === "POST" && pathname === "/check-in") {
     try {
       const { id } = await req.json();
-      if (id === "comiculCheckIn") {
+      if (id === "comiculCheckIn" || id === "https://comiculstamp.deno.dev/") {
         const sessionId = crypto.randomUUID();
         sessions.set(sessionId, { createdAt: Date.now() });
         return new Response(
