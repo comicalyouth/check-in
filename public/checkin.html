@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>こみかるスタンプ</title>
+    <script>
+        const CHECKIN_SESSION_TIMEOUT = 30 * 60 * 1000; // 30分
+        const checkedInAt = Number(sessionStorage.getItem("comiculCheckInAt"));
+        if (!checkedInAt || Date.now() - checkedInAt > CHECKIN_SESSION_TIMEOUT) {
+            sessionStorage.removeItem("comiculCheckInAt");
+            location.replace("./index.html");
+        }
+    </script>
     <link rel="stylesheet" href="./style.css"/>
     <link rel="stylesheet" href="./inquiry.css"/>
     <link rel="icon" href="favicon.ico">

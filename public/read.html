@@ -104,30 +104,22 @@
             drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
             drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
             drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
-            qrtxt=code.data                    
+            qrtxt=code.data
             handleQRCodeScan(qrtxt);
 
-            async function handleQRCodeScan(qrData) {
-              // サーバーにPOSTリクエストを送信
-              const response = await fetch('/check-in', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ id: qrData }),
-            });
+            const VALID_CHECKIN_CODES = [
+              "comiculCheckIn",
+              "https://comiculstamp.deno.dev/",
+              "https://comicalyouth.github.io/check-in/",
+            ];
 
-            if (!response.ok) {
-              // サーバーからのエラーメッセージを表示
-              const errorMessage = await response.text();
-            } else {
-              // サーバーから正常なレスポンスを受け取った場合
-              const data = await response.json();
-              console.log("レスポンスデータ:", data);
-              if (data.url) {
-                window.location.href = data.url + "?sessionId=" + data.sessionId;
+            function handleQRCodeScan(qrData) {
+              if (VALID_CHECKIN_CODES.includes(qrData)) {
+                sessionStorage.setItem("comiculCheckInAt", Date.now().toString());
+                window.location.href = "./checkin.html";
+              } else {
+                outputMessage.innerText = "無効なQRコードです";
               }
-            }
             }
           }
         }
