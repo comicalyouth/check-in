@@ -68,6 +68,21 @@
       const ok = document.getElementById("ok");
       let qrtxt;
 
+      const VALID_CHECKIN_CODES = [
+        "comiculCheckIn",
+        "https://comiculstamp.deno.dev/",
+        "https://comicalyouth.github.io/check-in/",
+      ];
+
+      function handleQRCodeScan(qrData) {
+        if (VALID_CHECKIN_CODES.includes(qrData)) {
+          sessionStorage.setItem("comiculCheckInAt", Date.now().toString());
+          window.location.href = "./checkin.html";
+        } else {
+          outputMessage.innerText = "無効なQRコードです";
+        }
+      }
+
       function drawLine(begin, end, color) {
         canvas.beginPath();
         canvas.moveTo(begin.x, begin.y);
@@ -106,21 +121,6 @@
             drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
             qrtxt=code.data
             handleQRCodeScan(qrtxt);
-
-            const VALID_CHECKIN_CODES = [
-              "comiculCheckIn",
-              "https://comiculstamp.deno.dev/",
-              "https://comicalyouth.github.io/check-in/",
-            ];
-
-            function handleQRCodeScan(qrData) {
-              if (VALID_CHECKIN_CODES.includes(qrData)) {
-                sessionStorage.setItem("comiculCheckInAt", Date.now().toString());
-                window.location.href = "./checkin.html";
-              } else {
-                outputMessage.innerText = "無効なQRコードです";
-              }
-            }
           }
         }
         requestAnimationFrame(tick);
