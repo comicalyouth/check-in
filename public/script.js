@@ -173,10 +173,6 @@ function checkIfDateExists(db, date) {
     });
 }
 
-function doReloadWithCache() {
-    window.location.reload(false);
-}
-
 function openModal() {
     const name = document.getElementById("field-name").value;
     const age = document.querySelector('input[name="age"]:checked');
@@ -338,24 +334,24 @@ function submitForm() {
     ).then(() => {
         document.getElementById("field-name").value = "";
         document.querySelectorAll('input[name="age"]').forEach(
-            (input) => (input.checked = false)
+            (input) => (input.checked = false),
         );
         document.getElementById("ageForm").value = "";
         document.getElementById("other-age-input").styledisplay = "none";
         document.getElementById("childCountForm").value = "";
         document.querySelectorAll('input[name="affiliation"]').forEach(
-            (input) => (input.checked = false)
+            (input) => (input.checked = false),
         );
         document.querySelectorAll('input[name="gender"]').forEach(
-            (input) => (input.checked = false)
+            (input) => (input.checked = false),
         );
         document.querySelectorAll('input[name="venue"]').forEach(
-            (input) => (input.checked = false)
+            (input) => (input.checked = false),
         );
         document.getElementById("venueForm").value = "";
         document.getElementById("other-venue-input").style.display = "none";
         document.querySelectorAll('input[name="time"]').forEach(
-            (input) => (input.checked = false)
+            (input) => (input.checked = false),
         );
         document.getElementById("timesForm").value = "";
         document.getElementById("other-time-input").style.display = "none";
@@ -385,21 +381,26 @@ function showThankYouModal() {
     document.body.appendChild(thankYouModal);
 
     document.getElementById("check").onclick = async function () {
+        this.disabled = true;
+        this.textContent = "処理中...";
+
         const thankYouModal = document.getElementById("thankYouModal");
         const todayId = getTodayDateString();
 
+        let db, db2, db3;
+
         try {
-            const db = await openDatabase();
-            const db2 = await openDatabaseDate();
-            const db3 = await openDatabaseImg();
+            db = await openDatabase();
+            db2 = await openDatabaseDate();
+            db3 = await openDatabaseImg();
             const idExists = await checkIfIdExists(db, todayId);
 
             if (idExists) {
-                console.error("Failed to save click to IndexedDB", error);
+                console.warn("本日は既にスタンプを獲得済みです。");
             } else {
                 const img = await saveClick(db);
-                const idExistsImg = await checkIfIdExistsImg(db3, img.stamp);
                 await saveDate(db2);
+                const idExistsImg = await checkIfIdExistsImg(db3, img.stamp);
                 if (idExistsImg) {
                     const transaction = db3.transaction(
                         [storeName4],
@@ -408,32 +409,41 @@ function showThankYouModal() {
                     const objectStore = transaction.objectStore(storeName4);
                     const request = objectStore.get(img.stamp);
 
-                    // 非同期でデータ取得を待つ
                     const result = await new Promise((resolve, reject) => {
                         request.onsuccess = () => resolve(request.result);
                         request.onerror = () => reject(request.error);
                     });
+
                     if (result) {
                         let cnt = result.cnt;
                         cnt++;
                         await saveImg(db3, img.stamp, cnt);
                     } else {
-                        throw new Error("cntRewardのデータが見つかりません。");
+                        throw new Error("画像のデータが見つかりません。");
                     }
                 } else {
                     const cnt = 1;
                     await saveImg(db3, img.stamp, cnt);
                 }
-                doReloadWithCache();
             }
-        } catch (error) {
-            console.error("Failed to save click to IndexedDB", error);
-        }
 
-        if (thankYouModal) {
-            thankYouModal.style.display = "none";
-            thankYouModal.remove();
+            if (thankYouModal) {
+                thankYouModal.style.display = "none";
+                thankYouModal.remove();
+            }
+
             window.location.href = "./index.html";
+            return;
+        } catch (err) {
+            console.error("スタンプ獲得処理に失敗しました:", err);
+
+            this.disabled = false;
+            this.textContent = "スタンプ獲得";
+            alert("エラーが発生しました。もう一度お試しください。");
+        } finally {
+            if (db) db.close();
+            if (db2) db2.close();
+            if (db3) db3.close();
         }
     };
 }

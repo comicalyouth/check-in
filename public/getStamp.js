@@ -1,12 +1,17 @@
 window.onload = async function () {
+    let db, db2;
+
     try {
-        const db = await openDatabase();
-        const db2 = await openDatabase2();
+        db = await openDatabase();
+        db2 = await openDatabase2();
         const entries = await fetchAllEntries(db); // データベースの全エントリーを取得
         renderStamps(entries); // エントリーをレンダリング
         await displayCnt(db2);
     } catch (error) {
         console.error("エラーが発生しました:", error);
+    } finally {
+        if (db) db.close();
+        if (db2) db2.close();
     }
 };
 
@@ -196,41 +201,39 @@ const btnNo = document.getElementById("btn-no");
 let count = 0;
 
 document.getElementById("exchange").onclick = async function () {
+    this.disabled = true;
+
     const db = await openDatabase();
-    const db2 = await openDatabase2();
     const stamps = await countEntries(db);
 
     if (stamps >= 6) {
+        const db2 = await openDatabase2();
         count = await getCntStamp(db2);
         popupWrapper2.style.display = "block";
-        if (!popupWrapper2.dataset.listenerAdded) {
-            popupWrapper2.dataset.listenerAdded = true;
 
-            popupWrapper2.addEventListener("click", (e) => {
-                if (
-                    e.target.id === "popup2-wrapper" ||
-                    e.target.closest("#btn-no") // btn-noに近い要素をクリックした場合も検知
-                ) {
-                    popupWrapper2.style.display = "none";
-                } else if (e.target.closest("#btn-yes")) {
-                    doReloadWithCache(count, db2);
-                    popupWrapper2.style.display = "none";
-                }
-            });
-        }
+        popupWrapper2.onclick = (e) => {
+            if (
+                e.target.id === "popup2-wrapper" ||
+                e.target.closest("#btn-no")
+            ) {
+                popupWrapper2.style.display = "none";
+                document.getElementById("exchange").disabled = false;
+                db.close();
+                db2.close();
+            } else if (e.target.closest("#btn-yes")) {
+                doReloadWithCache(count, db, db2);
+                popupWrapper2.style.display = "none";
+            }
+        };
     } else {
+        db.close();
         popupWrapper.style.display = "block";
-
-        // イベントリスナーを1度だけ登録
-        if (!popupWrapper.dataset.listenerAdded) {
-            popupWrapper.dataset.listenerAdded = true;
-
-            popupWrapper.addEventListener("click", (e) => {
-                if (e.target.id === "popup-wrapper") {
-                    popupWrapper.style.display = "none";
-                }
-            });
-        }
+        popupWrapper.onclick = (e) => {
+            if (e.target.id === "popup-wrapper") {
+                popupWrapper.style.display = "none";
+                document.getElementById("exchange").disabled = false;
+            }
+        };
     }
 };
 
@@ -251,41 +254,35 @@ function countEntries(db) {
     });
 }
 
-function doReloadWithCache(count, db2) {
+async function doReloadWithCache(count, db, db2) {
     const messageElement = document.getElementById("check-message");
     if (messageElement) {
         messageElement.textContent = "コンプリート処理中です...";
     }
-    const request = indexedDB.deleteDatabase(dbName);
 
-    request.onsuccess = function () {
+    try {
         count++;
-        saveReward(db2, count);
-        // キャッシュを利用してリロード
+        await saveReward(db2, count);
+        await new Promise((resolve, reject) => {
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            const clearRequest = store.clear();
+
+            clearRequest.onsuccess = () => resolve();
+            clearRequest.onerror = (e) => reject(e.target.error);
+        });
+        db.close();
+        db2.close();
         location.reload();
-    };
-
-    request.onerror = function (event) {
-        console.error("データベースの削除に失敗しました:", event.target.error);
-        // エラーメッセージを画面に表示
-        const messageElement = document.getElementById("check-message");
+    } catch (err) {
+        console.error("コンプリート処理に失敗しました:", err);
         if (messageElement) {
             messageElement.textContent =
-                "コンプリート処理中にエラーが発生しました。もう一度お試しください。";
+                "エラーが発生しました。もう一度お試しください。";
         }
-    };
-
-    request.onblocked = function () {
-        console.warn(
-            "データベースの削除がブロックされています。全てのタブを閉じてから再試行してください。",
-        );
-        // エラーメッセージを画面に表示
-        const messageElement = document.getElementById("check-message");
-        if (messageElement) {
-            messageElement.textContent =
-                "処理がブロックされています。全てのタブを閉じてから再試行してください。";
-        }
-    };
+        db.close();
+        db2.close();
+    }
 }
 
 function saveReward(db, point) {

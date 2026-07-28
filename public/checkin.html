@@ -148,6 +148,14 @@
                             三国高校
                         </li>
                         <li>
+                            <input type="radio" id="venue-mihama" name="venue" value="美浜こみかる" required>
+                            美浜こみかる
+                        </li>
+                        <li>
+                            <input type="radio" id="venue-fwi" name="venue" value="FWIこみかる" required>
+                            FWIこみかる
+                        </li>
+                        <li>
                             <input type="radio" id="venue-other" name="venue" value="その他" required>
                             その他
                         </li>
@@ -207,6 +215,7 @@
                 "age10", "age20", "age30", "age40", "age50", "age60", "age70", "age-other", "ageForm",
                 "elementary", "junior", "high", "university", "adult", "operation",
                 "gender-male", "gender-female", "gender-other",
+                "subsequent-times", "timesForm",
             ];
             //localStorage.clear();
             for (const item of items_for_save) {
@@ -233,6 +242,15 @@
                     }
                 }
             }
+            window.addEventListener('DOMContentLoaded', () => {
+                const subsequent = document.getElementById('subsequent-times');
+                const otherInput = document.getElementById('other-time-input');
+                if (subsequent && subsequent.checked) {
+                    otherInput.style.display = 'block';
+                } else {
+                    otherInput.style.display = 'none';
+                }
+            });
         </script>
     
         <!-- モーダルウィンドウ -->
